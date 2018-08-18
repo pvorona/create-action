@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Accepts configuration object Accepts argument names as payload property 1`] = `
+Object {
+  "id": "guest",
+  "schema": "cat",
+  "type": "FETCH_START",
+}
+`;
+
+exports[`Accepts configuration object Accepts payload creator as payload property 1`] = `
+Object {
+  "id": "guest",
+  "schema": "cat",
+  "type": "FETCH_START",
+}
+`;
+
+exports[`Accepts payload creator function 1`] = `
+Object {
+  "expanded": false,
+  "id": undefined,
+  "type": "SET_SIDEBAR_EXPANDED",
+}
+`;
+
+exports[`Creates action object 1`] = `
+Object {
+  "id": "1",
+  "type": "cat",
+}
+`;
+
+exports[`Provides all unnamed arguments as payload array 1`] = `
+Object {
+  "payload": Array [
+    "2",
+    "TOY",
+  ],
+  "type": "FETCH_START",
+}
+`;
+
+exports[`Provides one unnamed argument as payload object 1`] = `
+Object {
+  "payload": Object {
+    "id": "2",
+    "schema": "TOY",
+  },
+  "type": "FETCH_START",
+}
+`;
