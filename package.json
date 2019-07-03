@@ -12,7 +12,5 @@
   "devDependencies": {
     "jest": "^23.5.0"
   },
-  "dependencies": {
-    "prop-types": "^15.6.2"
-  }
+  "dependencies": {}
 }
