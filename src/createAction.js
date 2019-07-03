@@ -1,65 +1,23 @@
-// import { pushArgsToAction } from './pushArgsToAction'
-const PropTypes = require('prop-types')
-
 function pushArgsToAction (
     action,
     argNames,
     args
 ) {
     argNames.forEach((arg, index) => {
-        action[argNames[index]] = args[index]
+      action[argNames[index]] = args[index]
     })
 
     return action
 }
 
-function createAction (typeOrConfig, ...maybeArgnames) {
+function createAction (type, ...maybeArgNamesOrPayloadCreator) {
   let payloadCreator
-  let type = typeOrConfig
-  let argNames = maybeArgnames
-  let propTypes = {}
 
-  if (typeof typeOrConfig === 'object') {
-    type = typeOrConfig.type
-
-    if ('payload' in typeOrConfig) {
-      if (typeof typeOrConfig.payload === 'function') {
-        payloadCreator = typeOrConfig.payload
-      } else {
-        argNames = typeOrConfig.payload
-      }
-    } else {
-      const { type: type1, ...asdf } = typeOrConfig
-      argNames = Object.keys(asdf)
-      propTypes = asdf
-    }
-  }
-
-
-
-
-  if (typeof argNames[0] === 'function') {
-    payloadCreator = argNames[0]
+  if (maybeArgNamesOrPayloadCreator.length !== 0 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
+    payloadCreator = maybeArgNamesOrPayloadCreator[0]
   }
 
   function actionCreator (...args) {
-    const map = argNames.reduce((all, current, index) => Object.assign(all, {
-      [argNames[index]]: current,
-    }), {})
-      // ({
-      // ...all,
-      // [argNames[index]]: current,
-    // }), {}),
-    // const map = pushArgsToAction({}, argNames, args)
-
-    PropTypes.checkPropTypes(
-        propTypes,
-        map,
-        'argument',
-        type,
-    )
-
-
     if (payloadCreator) {
         return {
             type,
@@ -67,25 +25,25 @@ function createAction (typeOrConfig, ...maybeArgnames) {
         }
     }
 
-    if (argNames.length === 0 && args.length !== 0) {
-      const payload = args.length === 1 ? args[0] : args
+    if (maybeArgNamesOrPayloadCreator.length === 0 && args.length === 1) {
+      // check is object
       return {
         type,
-        payload,
+        ...args[0],
       }
     }
 
-    if (args.length < argNames.length) {
+    if (args.length !== maybeArgNamesOrPayloadCreator.length) {
       const message = (
         `Trying to create an action ${type} ` +
         'with invalid number of parameters. ' +
-        `Expected ${argNames.length}: ${JSON.stringify(argNames)}, ` +
+        `Expected ${maybeArgNamesOrPayloadCreator.length}: ${JSON.stringify(maybeArgNamesOrPayloadCreator)}, ` +
         `received ${args.length}: ${JSON.stringify(args)}.`
       )
       throw new Error(message)
     }
 
-    return pushArgsToAction({ type }, argNames, args)
+    return pushArgsToAction({ type }, maybeArgNamesOrPayloadCreator, args)
   }
 
   actionCreator.toString = () => type

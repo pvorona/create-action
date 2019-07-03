@@ -1,114 +1,63 @@
 const createAction = require('./createAction')
-const PropTypes = require('prop-types')
 
-it('Creates action object', () => {
-    const fetchStart = createAction('FETCH_START', 'id', 'type')
-    expect(fetchStart('1', 'cat')).toMatchSnapshot()
+//  defaults with payload creator
+// action = createAction('type', { a: 1, b: undefined })
+// action() === { type: 'type', a: 1, b: undefined }
+// action({ b: 2 }) === { type: 'type', a: 1, b: 2 }
+// action({ a: 2 }) === { type: 'type', a: 2, b: undefined }
+//
+//
+//  general use
+// action = createAction('type', 'a', 'b')
+// action() === throw Error
+// action(1) === throw Error
+// action(1, 2, 3) === throw Error
+// action(1, 2) === { typ: 'type', a: 1, b: 2 }
+//
+//
+//
+//  default named
+// action = createAction('type', (a = 1, b) => ({ a, b }))
+// action = createAction('type', 'a', 'b')
+// action = createAction('type', ['a', 1], ['b', 2])
+
+
+// todo
+// throw when only type is configured and more that 1 object is passed into creator
+
+it('toString return action type', () => {
+    const fetchItemsStart = createAction('FETCH_ITEMS_START')
+    expect(fetchItemsStart.toString()).toEqual('FETCH_ITEMS_START')
 })
 
-it('Invalid number of parameters throws Error', () => {
-    const fetchStart = createAction('FETCH_START', 'id', 'type')
-    expect(fetchStart).toThrow(Error)
+it('Call without arguments', () => {
+    const fetchItemsStart = createAction('FETCH_ITEMS_START')
+    expect(fetchItemsStart()).toEqual({ type: 'FETCH_ITEMS_START' })
 })
 
-it('toString returns action type', () => {
-    const creator = createAction('INIT_APPLICATION')
-    expect(creator.toString()).toEqual('INIT_APPLICATION')
+it('Call with payload object', () => {
+    const fetchItemsSuccess = createAction('ON_NEW_TAGS')
+    expect(fetchItemsSuccess(
+        { color: 'red', group: 3, id: 5 })
+    ).toEqual(
+        { color: 'red', group: 3, id: 5, type: 'ON_NEW_TAGS' }
+    )
+})
+
+it('Named arguments call', () => {
+    const fetchItemStart = createAction('FETCH_ITEM_START', 'id', 'type')
+    expect(fetchItemStart(1, 'machine')).toEqual({ type: 'FETCH_ITEM_START', id: 1, type: 'machine' })
+})
+
+it('Named arguments Throws Error with invalid number of parameters', () => {
+    const fetchItemStart = createAction('FETCH_ITEM_START', 'id', 'type')
+    expect(() => fetchItemStart()).toThrow(Error)
+    expect(() => fetchItemStart(1)).toThrow(Error)
+    expect(() => fetchItemStart(1, 2, 3)).toThrow(Error)
 })
 
 it('Accepts payload creator function', () => {
-    const setSidebarExpanded = createAction(
-        'SET_SIDEBAR_EXPANDED',
-        (expanded = false, id) => ({ expanded, id }),
-    )
-    expect(setSidebarExpanded()).toMatchSnapshot()
+    const action = createAction('FETCH_START', (total, error = false) => ({ total, error }))
+    expect(action(10)).toEqual({ type: 'FETCH_START', total: 10, error: false })
+    expect(action(10, true)).toEqual({ type: 'FETCH_START', total: 10, error: true })
 })
-
-it('Provides one unnamed argument as payload object', () => {
-    const fetchStart = createAction('FETCH_START')
-    expect(fetchStart({ id: '2', schema: 'TOY' })).toMatchSnapshot()
-})
-
-it('Provides all unnamed arguments as payload array', () => {
-    const fetchStart = createAction('FETCH_START')
-    expect(fetchStart('2', 'TOY')).toMatchSnapshot()
-})
-
-describe('Accepts configuration object', () => {
-    it('Accepts argument names as payload property', () => {
-        const fetchStart = createAction({
-            type: 'FETCH_START',
-            payload: ['id', 'schema'],
-        })
-        // const fetchStart = (id = '0', schema) => ({
-            // type: 'FETCH_START',
-            // id,
-            // schema,
-        // })
-        expect(fetchStart('guest', 'cat')).toMatchSnapshot()
-    })
-
-    it('Throws Error with invalid number of parameters', () => {
-        const fetchStart = createAction({
-            type: 'FETCH_START',
-            payload: ['id', 'schema'],
-        })
-        expect(() => fetchStart('guest')).toThrow(Error)
-    })
-
-    it('toString returns action type', () => {
-        const creator = createAction('INIT_APPLICATION')
-        expect(creator.toString()).toEqual('INIT_APPLICATION')
-    })
-
-    it('Accepts payload creator as payload property', () => {
-        const fetchStart = createAction({
-            type: 'FETCH_START',
-            payload: (id, schema = SCHEMAS.DEFAULT_SCHEMA) => ({ id, schema })
-        })
-        expect(fetchStart('guest', 'cat')).toMatchSnapshot()
-    })
-
-    it('Validates arguments by using PropTypes', () => {
-        const fetchStart = createAction({
-            type: 'FETCH_START',
-            id: PropTypes.string.isRequired,
-            schema: PropTypes.string.isRequired,
-        })
-        fetchStart(1,2)
-    })
-})
-
-
-
-// arguments | config
-//
-
-
-
-
-// export const fetchStart = createAction({
-//     type: 'FETCH_START',
-//     payloadCreator: (id, schema = SCHEMAS.DEFAULT_SCHEMA) => ({ id, schema })
-// })
-// export const fetchStart = createAction({
-//     type: 'FETCH_START',
-//     id: PropTypes.string.isRequired,
-//     schema: PropTypes.string.isRequired,
-// })
-
-// export const fetchStart = createAction({
-//     type: 'FETCH_START',
-//     payload: ['id', 'schema'],
-// })
-// export const fetchStart = createAction('FETCH_START', {
-//     id: PropTypes.string.isRequired,
-//     schema: PropTypes.string.isRequired,
-// })
-
-
-
-// export const fetchStart = createAction('FETCH_START', (id, schema = SCHEMAS.DEFAULT_SCHEMA) => ({ id, schema }))
-// export const fetchStart = createAction('FETCH_START', 'id', 'schema')
-
-// export const fetchStart = createAction()

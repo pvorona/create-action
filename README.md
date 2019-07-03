@@ -1,3 +1,44 @@
+- Payload object
+- Default params
+- PropTypes
+
+
+const setTrainedModelVersion2 = createAction('setTrainedModelVersion', (trainedModelVersion, shouldSave = true) => ({trainedModelVersion, shouldSave}) )
+
+const setTrainedModelVersion1 = createAction(
+    'setTrainedModelVersion',
+    'trainedModelVersion',
+    { key: 'shouldSave', default: true },
+)
+
+
+// payload creator
+action = createAction('type')
+action() === { type: 'type' }
+action({ a: 1, b: 2 }) === { type: 'type', a: 1, b: 2 }
+
+// defaults with payload creator
+action = createAction('type', { a: 1, b: undefined })
+action() === { type: 'type', a: 1, b: undefined }
+action({ b: 2 }) === { type: 'type', a: 1, b: 2 }
+action({ a: 2 }) === { type: 'type', a: 2, b: undefined }
+
+
+// general use
+action = createAction('type', 'a', 'b')
+action() === throw Error
+action(1) === throw Error
+action(1, 2, 3) === throw Error
+action(1, 2) === { typ: 'type', a: 1, b: 2 }
+
+
+
+// default named
+action = createAction('type', (a = 1, b) => ({ a, b }))
+action = createAction('type', 'a', 'b')
+action = createAction('type', ['a', 1], ['b', 2])
+
+
 fetchStart()
 fetchStart(item.id)
 fetchStart(item.id, item.type)
