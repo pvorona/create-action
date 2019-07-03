@@ -1,49 +1,32 @@
-function pushArgsToAction (
-    action,
-    argNames,
-    args
-) {
-    argNames.forEach((arg, index) => {
-      action[argNames[index]] = args[index]
-    })
-
-    return action
-}
-
 function createAction (type, ...maybeArgNamesOrPayloadCreator) {
+  const acceptObjectCreator = (payloadObject) => payloadObject
+  const collectNamedArgumentsCreator = (...args) => maybeArgNamesOrPayloadCreator.reduce(
+    (payload, argumentName, index) => ({ ...payload, [argumentName]: args[index] }),
+    {},
+  )
+
   let payloadCreator
 
-  if (maybeArgNamesOrPayloadCreator.length !== 0 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
+  if (maybeArgNamesOrPayloadCreator.length === 0) {
+    payloadCreator = acceptObjectCreator
+  } else if (maybeArgNamesOrPayloadCreator.length === 1 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
     payloadCreator = maybeArgNamesOrPayloadCreator[0]
+  } else {
+    payloadCreator = collectNamedArgumentsCreator
   }
 
   function actionCreator (...args) {
-    if (payloadCreator) {
-        return {
-            type,
-            ...payloadCreator(...args),
-        }
+    if (payloadCreator === acceptObjectCreator && !(args.length === 0 || (args.length === 1 && typeof args[0] === 'object'))) {
+      throw new Error
+    }
+    if (payloadCreator === collectNamedArgumentsCreator && args.length !== maybeArgNamesOrPayloadCreator.length) {
+      throw new Error
     }
 
-    if (maybeArgNamesOrPayloadCreator.length === 0 && args.length === 1) {
-      // check is object
-      return {
-        type,
-        ...args[0],
-      }
+    return {
+      type,
+      ...payloadCreator(...args),
     }
-
-    if (args.length !== maybeArgNamesOrPayloadCreator.length) {
-      const message = (
-        `Trying to create an action ${type} ` +
-        'with invalid number of parameters. ' +
-        `Expected ${maybeArgNamesOrPayloadCreator.length}: ${JSON.stringify(maybeArgNamesOrPayloadCreator)}, ` +
-        `received ${args.length}: ${JSON.stringify(args)}.`
-      )
-      throw new Error(message)
-    }
-
-    return pushArgsToAction({ type }, maybeArgNamesOrPayloadCreator, args)
   }
 
   actionCreator.toString = () => type

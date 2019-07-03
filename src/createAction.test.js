@@ -44,6 +44,11 @@ it('Call with payload object', () => {
     )
 })
 
+it('Call with something that is not object', () => {
+    const fetchItemsSuccess = createAction('ON_NEW_TAGS')
+    expect(() => fetchItemsSuccess(3)).toThrow(Error)
+})
+
 it('Named arguments call', () => {
     const fetchItemStart = createAction('FETCH_ITEM_START', 'id', 'type')
     expect(fetchItemStart(1, 'machine')).toEqual({ type: 'FETCH_ITEM_START', id: 1, type: 'machine' })
