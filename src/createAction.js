@@ -19,7 +19,7 @@ function createAction (type, ...maybeArgNamesOrPayloadCreator) {
     if (payloadCreator === acceptObjectCreator && !(args.length === 0 || (args.length === 1 && typeof args[0] === 'object'))) {
       throw new Error
     }
-    if (payloadCreator === collectNamedArgumentsCreator && args.length !== maybeArgNamesOrPayloadCreator.length) {
+    if (payloadCreator === collectNamedArgumentsCreator && !(args.length === maybeArgNamesOrPayloadCreator.length)) {
       throw new Error
     }
 
