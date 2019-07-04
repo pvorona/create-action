@@ -1,30 +1,5 @@
 const createAction = require('./createAction')
 
-//  defaults with payload creator
-// action = createAction('type', { a: 1, b: undefined })
-// action() === { type: 'type', a: 1, b: undefined }
-// action({ b: 2 }) === { type: 'type', a: 1, b: 2 }
-// action({ a: 2 }) === { type: 'type', a: 2, b: undefined }
-//
-//
-//  general use
-// action = createAction('type', 'a', 'b')
-// action() === throw Error
-// action(1) === throw Error
-// action(1, 2, 3) === throw Error
-// action(1, 2) === { typ: 'type', a: 1, b: 2 }
-//
-//
-//
-//  default named
-// action = createAction('type', (a = 1, b) => ({ a, b }))
-// action = createAction('type', 'a', 'b')
-// action = createAction('type', ['a', 1], ['b', 2])
-
-
-// todo
-// throw when only type is configured and more that 1 object is passed into creator
-
 it('toString return action type', () => {
     const fetchItemsStart = createAction('FETCH_ITEMS_START')
     expect(fetchItemsStart.toString()).toEqual('FETCH_ITEMS_START')

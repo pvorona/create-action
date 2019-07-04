@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Convenient redux action creators",
   "repository": "https://github.com/pvorona/create-action",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
