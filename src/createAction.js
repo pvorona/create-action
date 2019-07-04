@@ -1,4 +1,4 @@
-function createAction (type, ...maybeArgNamesOrPayloadCreator) {
+export function createAction (type, ...maybeArgNamesOrPayloadCreator) {
   let payloadCreatorCase
   let payloadCreator
 
@@ -34,5 +34,3 @@ function createAction (type, ...maybeArgNamesOrPayloadCreator) {
 
   return actionCreator
 }
-
-module.exports = createAction

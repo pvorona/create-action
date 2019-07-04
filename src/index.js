@@ -1,1 +1,1 @@
-module.exports = require('./createAction')
+export * from './createAction'

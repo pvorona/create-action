@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "description": "Convenient redux action creators",
   "repository": "https://github.com/pvorona/create-action",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup --config"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^24.8.0"
+    "jest": "^24.8.0",
+    "rollup": "^1.16.6"
   },
   "dependencies": {}
 }

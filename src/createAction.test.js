@@ -1,4 +1,4 @@
-const createAction = require('./createAction')
+import { createAction } from './createAction'
 
 it('toString return action type', () => {
     const fetchItemsStart = createAction('FETCH_ITEMS_START')
