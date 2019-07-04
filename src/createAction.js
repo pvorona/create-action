@@ -1,25 +1,26 @@
 function createAction (type, ...maybeArgNamesOrPayloadCreator) {
-  const acceptObjectCreator = (payloadObject) => payloadObject
-  const collectNamedArgumentsCreator = (...args) => maybeArgNamesOrPayloadCreator.reduce(
-    (payload, argumentName, index) => ({ ...payload, [argumentName]: args[index] }),
-    {},
-  )
-
+  let payloadCreatorCase
   let payloadCreator
 
   if (maybeArgNamesOrPayloadCreator.length === 0) {
-    payloadCreator = acceptObjectCreator
+    payloadCreator = (payloadObject) => payloadObject
+    payloadCreatorCase = 0
   } else if (maybeArgNamesOrPayloadCreator.length === 1 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
     payloadCreator = maybeArgNamesOrPayloadCreator[0]
+    payloadCreatorCase = 1
   } else {
-    payloadCreator = collectNamedArgumentsCreator
+    payloadCreator = (...args) => maybeArgNamesOrPayloadCreator.reduce(
+      (payload, argumentName, index) => ({ ...payload, [argumentName]: args[index] }),
+      {},
+    )
+    payloadCreatorCase = 2
   }
 
   function actionCreator (...args) {
-    if (payloadCreator === acceptObjectCreator && !(args.length === 0 || (args.length === 1 && typeof args[0] === 'object'))) {
+    if (payloadCreatorCase === 0 && !(args.length === 0 || (args.length === 1 && typeof args[0] === 'object'))) {
       throw new Error
     }
-    if (payloadCreator === collectNamedArgumentsCreator && !(args.length === maybeArgNamesOrPayloadCreator.length)) {
+    if (payloadCreatorCase === 2 && !(args.length === maybeArgNamesOrPayloadCreator.length)) {
       throw new Error
     }
 
