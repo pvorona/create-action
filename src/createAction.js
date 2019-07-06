@@ -10,6 +10,12 @@ const transformArgsForPayloadCreatorByCase = {
   2: (argNames, ...args) => [argNames, ...args]
 }
 
+const validateByCase = {
+  0: (args) => (args.length === 0 || (args.length === 1 && typeof args[0] === 'object')),
+  1: () => true,
+  2: (args, argNames) => (args.length === argNames.length),
+}
+
 export function createAction (type, ...maybeArgNamesOrPayloadCreator) {
   let payloadCreatorCase
   let payloadCreator
@@ -26,10 +32,7 @@ export function createAction (type, ...maybeArgNamesOrPayloadCreator) {
   }
 
   function actionCreator (...args) {
-    if (payloadCreatorCase === 0 && !(args.length === 0 || (args.length === 1 && typeof args[0] === 'object'))) {
-      throw new Error
-    }
-    if (payloadCreatorCase === 2 && !(args.length === maybeArgNamesOrPayloadCreator.length)) {
+    if (!validateByCase[payloadCreatorCase](args, maybeArgNamesOrPayloadCreator)) {
       throw new Error
     }
 
