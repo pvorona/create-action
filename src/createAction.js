@@ -1,18 +1,21 @@
+const acceptObject = (payloadObject) => payloadObject
+const acceptNamedArgs = (maybeArgNamesOrPayloadCreator, ...args) => maybeArgNamesOrPayloadCreator.reduce(
+  (payload, argumentName, index) => ({ ...payload, [argumentName]: args[index] }),
+  {},
+)
+
 export function createAction (type, ...maybeArgNamesOrPayloadCreator) {
   let payloadCreatorCase
   let payloadCreator
 
   if (maybeArgNamesOrPayloadCreator.length === 0) {
-    payloadCreator = (payloadObject) => payloadObject
+    payloadCreator = acceptObject
     payloadCreatorCase = 0
   } else if (maybeArgNamesOrPayloadCreator.length === 1 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
     payloadCreator = maybeArgNamesOrPayloadCreator[0]
     payloadCreatorCase = 1
   } else {
-    payloadCreator = (...args) => maybeArgNamesOrPayloadCreator.reduce(
-      (payload, argumentName, index) => ({ ...payload, [argumentName]: args[index] }),
-      {},
-    )
+    payloadCreator = acceptNamedArgs
     payloadCreatorCase = 2
   }
 
@@ -26,7 +29,10 @@ export function createAction (type, ...maybeArgNamesOrPayloadCreator) {
 
     return {
       type,
-      ...payloadCreator(...args),
+      ...payloadCreator(...[
+        ...(payloadCreatorCase === 2 ? [maybeArgNamesOrPayloadCreator] : []),
+        ...args,
+      ]),
     }
   }
 
