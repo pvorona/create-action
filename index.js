@@ -10,6 +10,12 @@
     {},
   );
 
+  const transformArgsForPayloadCreatorByCase = {
+    0: (argNames, object) => [object],
+    1: (argNames, ...args) => args,
+    2: (argNames, ...args) => [argNames, ...args]
+  };
+
   function createAction (type, ...maybeArgNamesOrPayloadCreator) {
     let payloadCreatorCase;
     let payloadCreator;
@@ -35,10 +41,9 @@
 
       return {
         type,
-        ...payloadCreator(...[
-          ...(payloadCreatorCase === 2 ? [maybeArgNamesOrPayloadCreator] : []),
-          ...args,
-        ]),
+        ...payloadCreator(
+          ...transformArgsForPayloadCreatorByCase[payloadCreatorCase](maybeArgNamesOrPayloadCreator, ...args),
+        ),
       }
     }
 
