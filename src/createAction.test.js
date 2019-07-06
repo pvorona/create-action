@@ -1,8 +1,12 @@
 const createAction = require('./createAction')
 
 it('toString return action type', () => {
-    const fetchItemsStart = createAction('FETCH_ITEMS_START')
-    expect(fetchItemsStart.toString()).toEqual('FETCH_ITEMS_START')
+    const fetchItemsStartType = createAction('FETCH_ITEMS_START_TYPE')
+    expect(fetchItemsStartType.toString()).toEqual('FETCH_ITEMS_START_TYPE')
+    const fetchItemStartNamed = createAction('FETCH_ITEMS_START_NAMED', 'a', 'b')
+    expect(fetchItemStartNamed.toString()).toEqual('FETCH_ITEMS_START_NAMED')
+    const fetchItemStartPayload = createAction('FETCH_ITEMS_START_PAYLOAD', (a, b) => ({ a, b }))
+    expect(fetchItemStartPayload.toString()).toEqual('FETCH_ITEMS_START_PAYLOAD')
 })
 
 it('Call without arguments', () => {
