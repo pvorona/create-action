@@ -10,6 +10,12 @@
     {},
   );
 
+  const payloadCreatorByCase = {
+    0: () => acceptObject,
+    1: ([payloadCreator]) => payloadCreator,
+    2: () => acceptNamedArgs,
+  };
+
   const transformArgsForPayloadCreatorByCase = {
     0: (argNames, object) => [object],
     1: (argNames, ...args) => args,
@@ -22,20 +28,19 @@
     2: (args, argNames) => (args.length === argNames.length),
   };
 
-  function createAction (type, ...maybeArgNamesOrPayloadCreator) {
-    let payloadCreatorCase;
-    let payloadCreator;
-
+  const getPayloadCreatorCase = (maybeArgNamesOrPayloadCreator) => {
     if (maybeArgNamesOrPayloadCreator.length === 0) {
-      payloadCreator = acceptObject;
-      payloadCreatorCase = 0;
+      return 0
     } else if (maybeArgNamesOrPayloadCreator.length === 1 && typeof maybeArgNamesOrPayloadCreator[0] === 'function') {
-      payloadCreator = maybeArgNamesOrPayloadCreator[0];
-      payloadCreatorCase = 1;
+      return 1
     } else {
-      payloadCreator = acceptNamedArgs;
-      payloadCreatorCase = 2;
+      return 2
     }
+  };
+
+  function createAction (type, ...maybeArgNamesOrPayloadCreator) {
+    const payloadCreatorCase = getPayloadCreatorCase(maybeArgNamesOrPayloadCreator);
+    const payloadCreator = payloadCreatorByCase[payloadCreatorCase](maybeArgNamesOrPayloadCreator);
 
     function actionCreator (...args) {
       if (!validateByCase[payloadCreatorCase](args, maybeArgNamesOrPayloadCreator)) {
